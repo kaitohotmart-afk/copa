@@ -49,6 +49,41 @@ const initialForm: FormData = {
   reserva2: '',
 }
 
+// ============================================================
+// Campo reutilizável — DEFINIDO FORA do componente pai
+// para evitar re-mount a cada keystroke (perda de foco)
+// ============================================================
+interface FieldProps {
+  id: string
+  label: string
+  value: string
+  onChange: (v: string) => void
+  placeholder?: string
+  required?: boolean
+  type?: string
+  error?: string
+}
+
+function Field({ id, label, value, onChange, placeholder, required = false, type = 'text', error }: FieldProps) {
+  return (
+    <div className="form-group">
+      <label className="form-label" htmlFor={id}>
+        {label} {required && <span className="required">*</span>}
+      </label>
+      <input
+        id={id}
+        type={type}
+        className={`form-input${error ? ' error' : ''}`}
+        value={value}
+        onChange={e => onChange(e.target.value)}
+        placeholder={placeholder}
+        autoComplete="off"
+      />
+      {error && <span className="form-error">⚠ {error}</span>}
+    </div>
+  )
+}
+
 export default function InscricaoPage() {
   const router = useRouter()
   const [form, setForm] = useState<FormData>(initialForm)
@@ -56,7 +91,7 @@ export default function InscricaoPage() {
   const [loading, setLoading] = useState(false)
   const [globalError, setGlobalError] = useState('')
 
-  const updateField = (field: keyof FormData, value: string) => {
+  const updateField = (field: keyof FormData) => (value: string) => {
     setForm(prev => ({ ...prev, [field]: value }))
     if (errors[field]) {
       setErrors(prev => {
@@ -96,7 +131,6 @@ export default function InscricaoPage() {
 
     setLoading(true)
     try {
-      // Insert equipa
       const { data: equipa, error: equipaError } = await supabase
         .from('equipas')
         .insert({
@@ -114,7 +148,6 @@ export default function InscricaoPage() {
 
       if (equipaError) throw equipaError
 
-      // Build jogadores list
       const jogadores = [
         { nome_jogador: form.jogador1.trim(), tipo: 'titular', ordem: 1 },
         { nome_jogador: form.jogador2.trim(), tipo: 'titular', ordem: 2 },
@@ -124,10 +157,7 @@ export default function InscricaoPage() {
         ...(form.reserva2.trim() ? [{ nome_jogador: form.reserva2.trim(), tipo: 'reserva', ordem: 6 }] : []),
       ].map(j => ({ ...j, equipa_id: equipa.id }))
 
-      const { error: jogadoresError } = await supabase
-        .from('jogadores')
-        .insert(jogadores)
-
+      const { error: jogadoresError } = await supabase.from('jogadores').insert(jogadores)
       if (jogadoresError) throw jogadoresError
 
       router.push('/sucesso')
@@ -137,28 +167,6 @@ export default function InscricaoPage() {
       setLoading(false)
     }
   }
-
-  const Field = ({
-    field, label, placeholder, required = false, type = 'text'
-  }: {
-    field: keyof FormData; label: string; placeholder?: string; required?: boolean; type?: string
-  }) => (
-    <div className="form-group">
-      <label className="form-label" htmlFor={field}>
-        {label} {required && <span className="required">*</span>}
-      </label>
-      <input
-        id={field}
-        type={type}
-        className={`form-input${errors[field] ? ' error' : ''}`}
-        value={form[field]}
-        onChange={e => updateField(field, e.target.value)}
-        placeholder={placeholder}
-        autoComplete="off"
-      />
-      {errors[field] && <span className="form-error">⚠ {errors[field]}</span>}
-    </div>
-  )
 
   return (
     <div className={styles.page}>
@@ -207,7 +215,15 @@ export default function InscricaoPage() {
             </div>
             <div className={styles.sectionBody}>
               <div className="form-grid">
-                <Field field="nome_equipa" label="Nome da Equipa" placeholder="Ex: Lobos de Maputo" required />
+                <Field
+                  id="nome_equipa"
+                  label="Nome da Equipa"
+                  value={form.nome_equipa}
+                  onChange={updateField('nome_equipa')}
+                  placeholder="Ex: Lobos de Maputo"
+                  required
+                  error={errors.nome_equipa}
+                />
                 <div className="form-group">
                   <label className="form-label" htmlFor="provincia">
                     Província <span className="required">*</span>
@@ -216,7 +232,7 @@ export default function InscricaoPage() {
                     id="provincia"
                     className={`form-select${errors.provincia ? ' error' : ''}`}
                     value={form.provincia}
-                    onChange={e => updateField('provincia', e.target.value)}
+                    onChange={e => updateField('provincia')(e.target.value)}
                   >
                     <option value="">Seleciona a província</option>
                     {PROVINCES.map(p => <option key={p} value={p}>{p}</option>)}
@@ -225,8 +241,20 @@ export default function InscricaoPage() {
                 </div>
               </div>
               <div className="form-grid">
-                <Field field="cidade_distrito" label="Cidade ou Distrito" placeholder="Ex: Matola (opcional)" />
-                <Field field="nome_guilda" label="Nome da Guilda" placeholder="Ex: Fire Storm (opcional)" />
+                <Field
+                  id="cidade_distrito"
+                  label="Cidade ou Distrito"
+                  value={form.cidade_distrito}
+                  onChange={updateField('cidade_distrito')}
+                  placeholder="Ex: Matola (opcional)"
+                />
+                <Field
+                  id="nome_guilda"
+                  label="Nome da Guilda"
+                  value={form.nome_guilda}
+                  onChange={updateField('nome_guilda')}
+                  placeholder="Ex: Fire Storm (opcional)"
+                />
               </div>
             </div>
           </div>
@@ -245,8 +273,25 @@ export default function InscricaoPage() {
                 <div className={styles.captainCard}>
                   <div className={styles.captainBadge}>👑 Capitão</div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                    <Field field="nome_capitao" label="Nome do Capitão" placeholder="Nome ou Nick no jogo" required />
-                    <Field field="whatsapp_capitao" label="WhatsApp do Capitão" placeholder="+258 8X XXX XXXX" required type="tel" />
+                    <Field
+                      id="nome_capitao"
+                      label="Nome do Capitão"
+                      value={form.nome_capitao}
+                      onChange={updateField('nome_capitao')}
+                      placeholder="Nome ou Nick no jogo"
+                      required
+                      error={errors.nome_capitao}
+                    />
+                    <Field
+                      id="whatsapp_capitao"
+                      label="WhatsApp do Capitão"
+                      value={form.whatsapp_capitao}
+                      onChange={updateField('whatsapp_capitao')}
+                      placeholder="+258 8X XXX XXXX"
+                      required
+                      type="tel"
+                      error={errors.whatsapp_capitao}
+                    />
                   </div>
                 </div>
                 <div className={styles.captainCard}>
@@ -254,8 +299,25 @@ export default function InscricaoPage() {
                     🥈 Vice-Capitão
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                    <Field field="nome_vice_capitao" label="Nome do Vice-Capitão" placeholder="Nome ou Nick no jogo" required />
-                    <Field field="whatsapp_vice_capitao" label="WhatsApp do Vice-Capitão" placeholder="+258 8X XXX XXXX" required type="tel" />
+                    <Field
+                      id="nome_vice_capitao"
+                      label="Nome do Vice-Capitão"
+                      value={form.nome_vice_capitao}
+                      onChange={updateField('nome_vice_capitao')}
+                      placeholder="Nome ou Nick no jogo"
+                      required
+                      error={errors.nome_vice_capitao}
+                    />
+                    <Field
+                      id="whatsapp_vice_capitao"
+                      label="WhatsApp do Vice-Capitão"
+                      value={form.whatsapp_vice_capitao}
+                      onChange={updateField('whatsapp_vice_capitao')}
+                      placeholder="+258 8X XXX XXXX"
+                      required
+                      type="tel"
+                      error={errors.whatsapp_vice_capitao}
+                    />
                   </div>
                 </div>
               </div>
@@ -277,10 +339,13 @@ export default function InscricaoPage() {
                   <div key={n} className={styles.playerCard}>
                     <div className={styles.playerNum}>#{n}</div>
                     <Field
-                      field={`jogador${n}` as keyof FormData}
+                      id={`jogador${n}`}
                       label={`Jogador ${n}`}
+                      value={form[`jogador${n}` as keyof FormData]}
+                      onChange={updateField(`jogador${n}` as keyof FormData)}
                       placeholder="Nick no Free Fire"
                       required
+                      error={errors[`jogador${n}`]}
                     />
                   </div>
                 ))}
@@ -301,11 +366,23 @@ export default function InscricaoPage() {
               <div className="form-grid">
                 <div className={`${styles.playerCard} ${styles.playerCardOptional}`}>
                   <div className={styles.playerNum} style={{ background: 'rgba(148,163,184,0.1)', color: '#94a3b8' }}>R1</div>
-                  <Field field="reserva1" label="Reserva 1" placeholder="Nick no Free Fire (opcional)" />
+                  <Field
+                    id="reserva1"
+                    label="Reserva 1"
+                    value={form.reserva1}
+                    onChange={updateField('reserva1')}
+                    placeholder="Nick no Free Fire (opcional)"
+                  />
                 </div>
                 <div className={`${styles.playerCard} ${styles.playerCardOptional}`}>
                   <div className={styles.playerNum} style={{ background: 'rgba(148,163,184,0.1)', color: '#94a3b8' }}>R2</div>
-                  <Field field="reserva2" label="Reserva 2" placeholder="Nick no Free Fire (opcional)" />
+                  <Field
+                    id="reserva2"
+                    label="Reserva 2"
+                    value={form.reserva2}
+                    onChange={updateField('reserva2')}
+                    placeholder="Nick no Free Fire (opcional)"
+                  />
                 </div>
               </div>
             </div>
