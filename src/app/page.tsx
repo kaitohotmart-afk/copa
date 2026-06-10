@@ -232,7 +232,7 @@ export default function LandingPage() {
               </p>
             </div>
             <div style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', textAlign: 'right' }}>
-              <p>© 2025 Copa Enigma & Batata Doce</p>
+              <p>© 2026 Copa Enigma & Batata Doce</p>
               <p>Todos os direitos reservados</p>
             </div>
           </div>
