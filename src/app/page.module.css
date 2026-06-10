@@ -1,0 +1,421 @@
+/* ==========================================
+   LANDING PAGE STYLES
+   ========================================== */
+
+/* NAV */
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: rgba(10, 12, 18, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255, 140, 0, 0.15);
+}
+
+.navInner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+}
+
+.navLogo {
+  font-size: 1.1rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+}
+
+/* MAIN */
+.main {
+  min-height: 100vh;
+}
+
+/* HERO */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  overflow: hidden;
+  padding: 100px 1.5rem 4rem;
+}
+
+.heroBg {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(255, 140, 0, 0.18) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 50% 100%, rgba(255, 69, 0, 0.12) 0%, transparent 60%),
+    var(--gradient-bg);
+  z-index: 0;
+}
+
+.heroParticles {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.particle {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  opacity: 0;
+  animation: particleFloat 8s infinite;
+  animation-delay: calc(var(--i) * 0.4s);
+  left: calc(var(--i) * 5.26%);
+  top: 100%;
+}
+
+@keyframes particleFloat {
+  0% { opacity: 0; transform: translateY(0) scale(0); }
+  10% { opacity: 0.8; transform: translateY(-20px) scale(1); }
+  90% { opacity: 0.3; }
+  100% { opacity: 0; transform: translateY(-80vh) scale(0.5); }
+}
+
+.heroContent {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.heroImageWrapper {
+  position: relative;
+  width: 100%;
+  max-width: 800px;
+}
+
+.heroBanner {
+  width: 100%;
+  height: auto;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 140, 0, 0.25);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 40px rgba(255,140,0,0.2);
+}
+
+.heroBannerGlow {
+  position: absolute;
+  inset: -20px;
+  background: radial-gradient(ellipse at center, rgba(255,140,0,0.15) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.heroTitle {
+  font-size: clamp(2.5rem, 8vw, 5rem);
+  line-height: 1.05;
+  letter-spacing: 0.02em;
+}
+
+.heroTitleAnd {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.5em;
+  color: var(--color-text-muted);
+  font-weight: 400;
+}
+
+.heroSubtitle {
+  font-size: clamp(1rem, 2.5vw, 1.2rem);
+  color: var(--color-text-muted);
+  max-width: 560px;
+  line-height: 1.7;
+}
+
+.heroCta {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 0.5rem;
+}
+
+.heroScroll {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1;
+}
+
+.scrollIndicator {
+  width: 28px;
+  height: 48px;
+  border: 2px solid rgba(255, 140, 0, 0.4);
+  border-radius: 14px;
+  position: relative;
+}
+
+.scrollIndicator::before {
+  content: '';
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 10px;
+  background: var(--color-primary);
+  border-radius: 2px;
+  animation: scrollBounce 2s ease-in-out infinite;
+}
+
+@keyframes scrollBounce {
+  0%, 100% { transform: translateX(-50%) translateY(0); opacity: 1; }
+  50% { transform: translateX(-50%) translateY(14px); opacity: 0.3; }
+}
+
+/* FEATURES */
+.features {
+  padding: 0;
+  background: rgba(255, 140, 0, 0.04);
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.featuresGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+}
+
+.featureCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2.5rem 1.5rem;
+  border-right: 1px solid var(--color-border);
+  transition: var(--transition);
+}
+
+.featureCard:last-child {
+  border-right: none;
+}
+
+.featureCard:hover {
+  background: rgba(255, 140, 0, 0.06);
+}
+
+.featureIcon {
+  font-size: 2rem;
+  margin-bottom: 0.75rem;
+}
+
+.featureValue {
+  font-family: 'Orbitron', monospace;
+  font-size: 1.4rem;
+  font-weight: 800;
+  background: var(--gradient-gold);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.35rem;
+}
+
+.featureLabel {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  .featuresGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .featureCard:nth-child(2) {
+    border-right: none;
+  }
+  .featureCard:nth-child(1),
+  .featureCard:nth-child(2) {
+    border-bottom: 1px solid var(--color-border);
+  }
+}
+
+/* ABOUT */
+.about {
+  background: var(--color-bg);
+}
+
+.aboutGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: start;
+}
+
+.aboutText {
+  display: flex;
+  flex-direction: column;
+}
+
+.aboutStats {
+  display: flex;
+  gap: 2rem;
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.aboutStat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.aboutCards {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.aboutInfoCard {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.infoRow {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.infoIcon {
+  font-size: 1.5rem;
+  width: 40px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.aboutProvCard {
+  /* inherits from .card */
+}
+
+.provincesGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.provinceTag {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  background: rgba(255, 140, 0, 0.1);
+  border: 1px solid rgba(255, 140, 0, 0.2);
+  border-radius: 4px;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  transition: var(--transition-fast);
+}
+
+.provinceTag:hover {
+  background: rgba(255, 140, 0, 0.2);
+  color: var(--color-text);
+}
+
+@media (max-width: 768px) {
+  .aboutGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* RULES */
+.rules {
+  background: var(--color-bg-2);
+}
+
+.rulesGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.ruleCard {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1.25rem;
+}
+
+.ruleIcon {
+  font-size: 1.4rem;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.ruleCard p {
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+  line-height: 1.6;
+}
+
+@media (max-width: 640px) {
+  .rulesGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* CTA SECTION */
+.ctaSection {
+  position: relative;
+  padding: 6rem 1.5rem;
+  text-align: center;
+  overflow: hidden;
+}
+
+.ctaBg {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 80% at 50% 50%, rgba(255, 140, 0, 0.12) 0%, transparent 70%),
+    var(--color-bg);
+  z-index: 0;
+}
+
+.ctaContent {
+  position: relative;
+  z-index: 1;
+}
+
+/* FOOTER */
+.footer {
+  background: var(--color-bg-2);
+  border-top: 1px solid var(--color-border);
+  padding: 2rem 0;
+}
+
+.footerInner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+@media (max-width: 640px) {
+  .footerInner {
+    flex-direction: column;
+    text-align: center;
+  }
+  .footerInner > div:last-child {
+    text-align: center;
+  }
+}
