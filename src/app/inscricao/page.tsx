@@ -131,9 +131,12 @@ export default function InscricaoPage() {
 
     setLoading(true)
     try {
-      const { data: equipa, error: equipaError } = await supabase
+      const equipaId = crypto.randomUUID()
+
+      const { error: equipaError } = await supabase
         .from('equipas')
         .insert({
+          id: equipaId,
           nome_equipa: form.nome_equipa.trim(),
           provincia: form.provincia,
           cidade_distrito: form.cidade_distrito.trim() || null,
@@ -143,8 +146,6 @@ export default function InscricaoPage() {
           nome_vice_capitao: form.nome_vice_capitao.trim(),
           whatsapp_vice_capitao: form.whatsapp_vice_capitao.trim(),
         })
-        .select('id')
-        .single()
 
       if (equipaError) throw equipaError
 
@@ -155,7 +156,7 @@ export default function InscricaoPage() {
         { nome_jogador: form.jogador4.trim(), tipo: 'titular', ordem: 4 },
         ...(form.reserva1.trim() ? [{ nome_jogador: form.reserva1.trim(), tipo: 'reserva', ordem: 5 }] : []),
         ...(form.reserva2.trim() ? [{ nome_jogador: form.reserva2.trim(), tipo: 'reserva', ordem: 6 }] : []),
-      ].map(j => ({ ...j, equipa_id: equipa.id }))
+      ].map(j => ({ ...j, equipa_id: equipaId }))
 
       const { error: jogadoresError } = await supabase.from('jogadores').insert(jogadores)
       if (jogadoresError) throw jogadoresError
